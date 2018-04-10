@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web interface for monitoring bytek phoenix robots, based on the project mqtt-panel by Fabian Affolter">
+    <meta name="author" content="Jimena Cabrejas">
+
+    <title>bytek phoenix robots conditions</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+
+    <!-- MQTT Websocket -->
+    <script type="text/javascript" src="js/mqttws31.js"></script>
+    <script type="text/javascript">
+        var host = '79.153.157.196';
+        var port = 9001;
+        var topic = '#';
+        var useTLS = false;
+        var cleansession = true;
+        var mqtt;
+        var reconnectTimeout = 2000;
+
+        function MQTTconnect() {
+	    if (typeof path == "undefined") {
+		    path = '/mqtt';
+	    }
+	    mqtt = new Paho.MQTT.Client(
+			    host,
+			    port,
+			    path,
+			    "mqtt_panel" + parseInt(Math.random() * 100, 10)
+	    );
+            var options = {
+                timeout: 3,
+                useSSL: useTLS,
+                cleanSession: cleansession,
+                onSuccess: onConnect,
+                onFailure: function (message) {
+                    $('#status').html("Connection failed: " + message.errorMessage + "Retrying...");
+                    setTimeout(MQTTconnect, reconnectTimeout);
+                }
+            };
+
+            mqtt.onConnectionLost = onConnectionLost;
+            mqtt.onMessageArrived = onMessageArrived;
+            console.log("Host: "+ host + ", Port: " + port + ", Path: " + path + " TLS: " + useTLS);
+            mqtt.connect(options);
+        };
+
+        function onConnect() {
+            $('#status').html('Connected to ' + host + ':' + port + path);
+            mqtt.subscribe(topic, {qos: 0});
+            $('#topic').html(topic);
+        };
+
+        function onConnectionLost(response) {
+            setTimeout(MQTTconnect, reconnectTimeout);
+            $('#status').html("Connection lost: " + responseObject.errorMessage + ". Reconnecting...");
+        };
+
+        function onMessageArrived(message) {
+            var topic = message.destinationName;
+            var payload = message.payloadString;
+            //console.log("Topic: " + topic + ", Message payload: " + payload);
+            $('#message').html(topic + ', ' + payload);
+            var message = topic.split('/');
+            var robot = message[1];
+            var sensor = message[2];
+
+            var timestamp = Math.round((new Date()).getTime() / 1000);
+            switch (robot) {
+              case 'wotto':
+              switch (sensor) {
+                case 'temp':
+                    $('#wottoTempSensor').html('(Sensor value: ' + payload + ')');
+                    if (payload >= 40) {
+                            $('#wottoTempLabel').text(payload + '°C - too hot');
+                            $('#wottoTempLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
+                    } else if (payload >= 30) {
+                            $('#wottoTempLabel').text(payload + '°C - hot');
+                            $('#wottoTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                    } else if (payload >= 20) {
+                            $('#wottoTempLabel').text(payload + '°C - normal');
+                            $('#wottoTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                    } else if (payload <= 15) {
+                            $('#wottoTempLabel').text(payload + '°C - low');
+                            $('#wottoTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
+                    }
+                  break;
+                  case 'dist':
+                      $('#wottoDistSensor').html('(Sensor value: ' + payload + ')');
+                      if (payload >= 25) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
+                      } else if (payload >= 21) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                      } else if (payload >= 18) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                      } else if (payload >= 15) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
+                      } else if (mpayload <= 12) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
+                      wottoDist.push(parseInt(payload));
+                      // Show only 20 values
+                      if (wottoDist.length >= 20) {
+                          wottoDist.shift()
+                      }
+                    }
+                    break;
+                }
+                    break;
+                case 'winchy':
+                  switch (sensor) {
+                    case 'temp':
+                    $('#winchyTempSensor').html('(Sensor value: ' + payload + ')');
+                    if (payload >= 40) {
+                            $('#winchyTempLabel').text(payload + '°C - too hot');
+                            $('#winchyTempLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
+                    } else if (payload >= 30) {
+                            $('#winchyTempLabel').text(payload + '°C - hot');
+                            $('#winchyTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                    } else if (payload >= 20) {
+                            $('#winchyTempLabel').text(payload + '°C - normal');
+                            $('#winchyTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                    } else if (payload <= 15) {
+                            $('#winchyTempLabel').text(payload + '°C - low');
+                            $('#winchyTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
+                    } 
+                    break;
+                    case 'dist':
+                    //Distance
+                    $('#winchyDistSensor').html('(Sensor value: ' + payload + ')');
+                    if (payload >= 25) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
+                    } else if (payload >= 21) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                    } else if (payload >= 18) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                    } else if (payload >= 15) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
+                    } else if (mpayload <= 12) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
+                    winchyDist.push(parseInt(payload));
+                    if (winchyDist.length >= 20) {
+                        winchyDist.shift()
+                    }
+
+                    }
+                    break;
+                default: console.log('Error: Data do not match the MQTT topic.'); break;
+}
+            }
+        };
+        $(document).ready(function() {
+            MQTTconnect();
+        });
+    </script>
+
+  </head>
+
+  <body>
+    <div id="wrap">
+      <div class="container">
+        <div class="page-header"><h1><img src="./img/phoenix_logo.png"><b>bytek phoenix robots conditions</b></h1></div>
+
+            <div class="panel panel-default">
+              <div class="panel-body">
+                    <table class="table table-striped">
+                        <!-- winchy distance -->
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>winchy distance</h3><small id="winchyDistSensor">(no value recieved)</small></td>
+                        <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="winchyDistLabel" class="label">Unknown</span></h4></td>
+                        </tr>
+                        <!-- winchy temperature -->
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>winchy temperature</h3><small id="winchyTempSensor">(no value recieved)</small></td>
+                        <td width="30%" style="vertical-align:left;"><h4>&nbsp;<span id="winchyTempLabel" class="label">Unknown</span></h4></td>
+                        </tr>
+                        <!-- wotto distance -->
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>wotto distance</h3><small id="wottoDistSensor">(no value recieved)</small></td>
+                        <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="wottoDistLabel" class="label">Unknown</span></h4></td>
+                        </tr>
+                        <!-- wotto temperature -->
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>wotto temperature</h3><small id="wottoTempSensor">(no value recieved)</small></td>
+                        <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="wottoTempLabel" class="label">Unknown</span></h4></td>
+                        </tr>
+                    </table>
+              </div>
+            </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+              <div class="row">
+                <div class="col-md-6"><b>Latest MQTT message:  </b> <small id="message">no message recieved</small></div>
+                <div class="col-md-6"><b>Status: </b>  <small id='status'></small></div>
+              </div>
+          </div>
+        </div>
+      <div class="footer">
+        <medium><p class="text-center"><img src="./img/bytek_logo.png"> <a href="http://bytek.info/">Bytek</a> 2017 - 2018</p></medium>
+    </div>
+  </body>
+</html>
