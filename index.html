@@ -83,37 +83,29 @@
                     } else if (payload >= 30) {
                             $('#wottoTempLabel').text(payload + '°C - hot');
                             $('#wottoTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
-                    } else if (payload >= 20) {
+                    } else if (payload >= 18) {
                             $('#wottoTempLabel').text(payload + '°C - normal');
                             $('#wottoTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
-                    } else if (payload <= 15) {
+                    } else if (payload < 18) {
                             $('#wottoTempLabel').text(payload + '°C - low');
                             $('#wottoTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
                     }
                   break;
                   case 'dist':
                       $('#wottoDistSensor').html('(Sensor value: ' + payload + ')');
-                      if (payload >= 25) {
-                              $('#wottoDistLabel').text(payload + 'cm');
-                              $('#wottoDistLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
-                      } else if (payload >= 21) {
-                              $('#wottoDistLabel').text(payload + 'cm');
-                              $('#wottoDistLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
-                      } else if (payload >= 18) {
-                              $('#wottoDistLabel').text(payload + 'cm');
-                              $('#wottoDistLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
-                      } else if (payload >= 15) {
+                      if (payload >= 20) {
                               $('#wottoDistLabel').text(payload + 'cm');
                               $('#wottoDistLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
-                      } else if (mpayload <= 12) {
+                      } else if (payload >= 15) {
                               $('#wottoDistLabel').text(payload + 'cm');
-                              $('#wottoDistLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
-                      wottoDist.push(parseInt(payload));
-                      // Show only 20 values
-                      if (wottoDist.length >= 20) {
-                          wottoDist.shift()
+                              $('#wottoDistLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                      } else if (payload >= 8) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                      } else if (payload < 8) {
+                              $('#wottoDistLabel').text(payload + 'cm');
+                              $('#wottoDistLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
                       }
-                    }
                     break;
                 }
                     break;
@@ -127,37 +119,29 @@
                     } else if (payload >= 30) {
                             $('#winchyTempLabel').text(payload + '°C - hot');
                             $('#winchyTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
-                    } else if (payload >= 20) {
+                    } else if (payload >= 18) {
                             $('#winchyTempLabel').text(payload + '°C - normal');
                             $('#winchyTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
-                    } else if (payload <= 15) {
+                    } else if (payload < 18) {
                             $('#winchyTempLabel').text(payload + '°C - low');
                             $('#winchyTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
-                    } 
+                    }
                     break;
                     case 'dist':
                     //Distance
                     $('#winchyDistSensor').html('(Sensor value: ' + payload + ')');
-                    if (payload >= 25) {
-                            $('#winchyDistLabel').text(payload + 'cm');
-                            $('#winchyDistLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
-                    } else if (payload >= 21) {
-                            $('#winchyDistLabel').text(payload + 'cm');
-                            $('#winchyDistLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
-                    } else if (payload >= 18) {
-                            $('#winchyDistLabel').text(payload + 'cm');
-                            $('#winchyDistLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
-                    } else if (payload >= 15) {
+                    if (payload >= 20) {
                             $('#winchyDistLabel').text(payload + 'cm');
                             $('#winchyDistLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
-                    } else if (mpayload <= 12) {
+                    } else if (payload >= 15) {
                             $('#winchyDistLabel').text(payload + 'cm');
-                            $('#winchyDistLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
-                    winchyDist.push(parseInt(payload));
-                    if (winchyDist.length >= 20) {
-                        winchyDist.shift()
-                    }
-
+                            $('#winchyDistLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                    } else if (payload >= 8) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                    } else if (payload < 8) {
+                            $('#winchyDistLabel').text(payload + 'cm');
+                            $('#winchyDistLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
                     }
                     break;
                 default: console.log('Error: Data do not match the MQTT topic.'); break;
