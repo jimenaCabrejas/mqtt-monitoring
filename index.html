@@ -12,6 +12,7 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <!-- jQuery -->
     <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/jscolor.js"></script>
 
     <!-- MQTT Websocket -->
     <script type="text/javascript" src="js/mqttws31.js"></script>
@@ -32,7 +33,7 @@
 			    host,
 			    port,
 			    path,
-			    "mqtt_panel" + parseInt(Math.random() * 100, 10)
+			    "mqtt_monitor" + parseInt(Math.random() * 100, 10)
 	    );
             var options = {
                 timeout: 3,
@@ -151,14 +152,31 @@
         $(document).ready(function() {
             MQTTconnect();
         });
+
+        function verdeFunction() {
+          message = new Paho.MQTT.Message("verde");
+          message.destinationName = "phoenix/winchy/luz";
+          mqtt.send(message);
+        };
+
+
+        function update(jscolor) {
+            // 'jscolor' instance can be used as a string
+            var color=document.getElementById("color").value;
+            message = new Paho.MQTT.Message(color);
+            message.destinationName = "phoenix/winchy/luz";
+            mqtt.send(message);
+        }
     </script>
+
+
 
   </head>
 
   <body>
     <div id="wrap">
       <div class="container">
-        <div class="page-header"><h1><img src="./img/phoenix_logo.png"><b>bytek phoenix robots conditions</b></h1></div>
+        <div class="page-header"><h1><img src="./img/phoenix_logo.png"><b>Bytek Phoenix robots conditions</b></h1></div>
 
             <div class="panel panel-default">
               <div class="panel-body">
@@ -186,6 +204,18 @@
                     </table>
               </div>
             </div>
+          <div class="container">
+            <div class="page-header"><h1><img src="./img/winchy1.png"><b>Winchy control</b></h1></div>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <h3>Elige un color para las luces de Winchy</h3>
+
+                <input class="jscolor {width:243, height:150, position:'right', borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'}"
+                id="color" onchange="update(this.jscolor)" value="0000FF">
+              </div>
+          </div>
+        </div>
+
         <div class="panel panel-default">
           <div class="panel-body">
               <div class="row">
@@ -194,7 +224,7 @@
               </div>
           </div>
         </div>
-      <div class="footer">
+        <div class="footer">
         <medium><p class="text-center"><img src="./img/bytek_logo.png"> <a href="http://bytek.info/">Bytek</a> 2017 - 2018</p></medium>
     </div>
   </body>
